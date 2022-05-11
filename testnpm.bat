@@ -1,1 +1,0 @@
-docker run --rm -v "D:\Users\Do\Desktop\BigData\final\docker\redis-test:/app" -w /app node:latest bash -c "npm init -y && npm i socket.io"

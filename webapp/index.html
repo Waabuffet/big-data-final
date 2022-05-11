@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <title>Weather Data Charts</title>
+    <style>
+        th, td{
+            text-align: center;
+        }
+        .sec{
+            border-right: 1px solid grey;
+        }
+    </style>
 </head>
 <body>
     
@@ -21,134 +29,43 @@
         <div>
             <canvas id="wsCanvas" width="400" height="100"></canvas>
         </div>
+
+        <div>
+            <table class="table table-sm">
+                <tr>
+                    <th colspan="2" class="sec">Temperature</th>
+                    <th colspan="2" class="sec">Humidity</th>
+                    <th colspan="2">Wind Speed</th>
+                </tr>
+                <tr>
+                    <td>min</td>
+                    <td class="sec">max</td>
+                    <td>min</td>
+                    <td class="sec">max</td>
+                    <td>min</td>
+                    <td>max</td>
+                </tr>
+                <tr>
+                    <td id="minTemperature"></td>
+                    <td id="maxTemperature" class="sec"></td>
+                    <td id="minHumidity"></td>
+                    <td id="maxHumidity" class="sec"></td>
+                    <td id="minWindSpeed"></td>
+                    <td id="maxWindSpeed"></td>
+                </tr>
+            </table>
+        </div>
     </div>
 
 
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/chart.min.js"></script>
+    <script src="/js/date_fns.js"></script>
+    <script src="/js/chartjs-adapter-date-fns.bundle.min.js"></script>
 
-
-<script src="/js/date_fns.js"></script>
-<script src="/js/chartjs-adapter-date-fns.bundle.min.js"></script>
-
-    <script>
-        var allData = {
-            'Temperature': [],
-            'Humidity': [],
-            'WindSpeed' : []
-        }
-        var chartOptions = {
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(tooltipItem) {
-                            var label = tooltipItem.dataset.label.replace(/\s+/g, '');
-                            var pointData = allData[label][tooltipItem.dataIndex];
-                            return "min: " + pointData.min + " | max: " + pointData.max;
-                        },
-                        footer: function(tooltipItem){
-                            var label = tooltipItem[0].dataset.label.replace(/\s+/g, '');
-                            var pointData = allData[label][tooltipItem[0].dataIndex];
-                            return "avg: " + pointData.avg;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    type: 'time',
-                    display: true,
-                },
-            },
-        }
-
-        const ctxTemperature = document.getElementById('tempCanvas').getContext('2d');
-        const chartTemperature = new Chart(ctxTemperature, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Temperature',
-                    data: [],
-                    fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
-            },
-            options: chartOptions
-        });
-
-        const ctxHumidity = document.getElementById('humCanvas').getContext('2d');
-        const chartHumidity = new Chart(ctxHumidity, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Humidity',
-                    data: [],
-                    fill: false,
-                    borderColor: 'rgb(150, 192, 100)',
-                    tension: 0.1
-                }]
-            },
-            options: chartOptions
-        });
-
-        const ctxWindSpeed = document.getElementById('wsCanvas').getContext('2d');
-        const chartWindSpeed = new Chart(ctxWindSpeed, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Wind Speed',
-                    data: [],
-                    fill: false,
-                    borderColor: 'rgb(200, 50, 192)',
-                    tension: 0.1
-                }]
-            },
-            options: chartOptions
-        });
-
-    </script>
-
-    <script>
-        var socket = io();
-
-        socket.on('connection', (socket) => {
-            console.log('connected to socket');
-        });
-
-        socket.on('redis-message', function(msg) {
-            console.log('received msg from redis:');
-            var data = JSON.parse(msg);
-            var datetime = Object.keys(data)[0];
-            var weatherData = data[datetime];
-            // console.log('datetime: ' + datetime);
-            // console.log('data: ');
-            // console.log(weatherData);
-
-            updateChart(chartTemperature, weatherData, datetime, "Temperature");
-            updateChart(chartHumidity, weatherData, datetime, "Humidity");
-            updateChart(chartWindSpeed, weatherData, datetime, "WindSpeed");
-        });
-        
-        function updateChart(chart, data, datetime, label){
-            var dataObject = {
-                avg: data['avg' + label],
-                min: data['min' + label],
-                max: data['max' + label]
-            }
-
-            allData[label].push(dataObject);
-            
-            chart.data.datasets[0].data.push(data['avg' + label]);
-            var d = new Date(0);
-            d.setUTCSeconds(datetime)
-            chart.data.labels.push(d);
-            chart.update();
-        }
-    </script>
+    <script src="/js/chart-fe.js"></script>
+    <script src="/js/socket-fe.js"></script>
+    
 </body>
 </html>

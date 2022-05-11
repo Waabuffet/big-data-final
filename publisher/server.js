@@ -20,7 +20,7 @@ var weatherData = {
   'avgWindSpeed' : 25
 }
 
-var time = 1650844800;
+var time = 1650844800000;
 // 1651672800 1651676400 3600000
 // 1650844800
 // 1650916800000 1650920400000 1650924000000
@@ -46,7 +46,7 @@ redisPub.on('error', (err) => {
 
 var counter = 0;
 
-
+// simulate java publisher
 // for(var i = 0; i < 100; i++){
 //   weatherDataObj = {}
 //   time += 3600;
@@ -58,9 +58,9 @@ var counter = 0;
 timer = setInterval(() => {
   console.log('pushing message ' + counter);
   weatherDataObj = {}
-  time += 3600;
+  time += 3600000;
   randomizeData(weatherData);
   weatherDataObj[time] = weatherData;
   redisPub.publish('weather-data', JSON.stringify(weatherDataObj));
   counter++;
-}, 1000);
+}, 5000);

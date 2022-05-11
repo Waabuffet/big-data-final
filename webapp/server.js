@@ -33,6 +33,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname+'/index.html'));
 });
 
+app.get('/all', (req, res) => {
+  res.sendFile(path.join(__dirname+'/all.html'));
+});
+
 http.listen(port, () => {
     console.log(`Node server running at http://127.0.0.1:${port}/`);
 });

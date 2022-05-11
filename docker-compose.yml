@@ -11,19 +11,21 @@ services:
     ports:
       - 80:80
     volumes:
-      - /Users/dominique/Documents/masters/bigdata/webapp:/app
+      - $WEB_APP_PATH:/app
     working_dir: /app
     depends_on: 
       - redis
     environment:
       - REDIS_HOST=redis
     command: node server.js
-  pub:
-    image: node:latest
-    container_name: pub
-    volumes:
-      - /Users/dominique/Documents/masters/bigdata/publisher:/app
-    working_dir: /app
-    environment:
-      - REDIS_HOST=redis
-    command: node server.js
+  # publisher-app: # for testing
+  #   image: node:latest
+  #   container_name: pub
+  #   volumes:
+  #     - $PUBLISHER_APP_PATH:/app
+  #   working_dir: /app
+  #   environment:
+  #     - REDIS_HOST=redis
+  #   depends_on: 
+  #     - redis
+  #   command: node server.js
